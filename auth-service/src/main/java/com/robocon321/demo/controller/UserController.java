@@ -12,7 +12,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.robocon321.demo.model.User;
 import com.robocon321.demo.repository.UserRepository;
+import com.robocon321.demo.service.AuthService;
 
+import graphql.ExecutionResult;
 import reactor.core.publisher.Mono;
 
 @RestController
@@ -20,26 +22,25 @@ import reactor.core.publisher.Mono;
 public class UserController {
 	@Autowired
 	UserRepository userRepository;
-	
+		
 	@Autowired
-	HttpGraphQlClient httpGraphQlClient;
+	private AuthService authService;
 
 	@GetMapping("/all")
-	public Mono<List<User>> getAll(@RequestParam(defaultValue = "id, email, password, fullName, birthday, gender") String fields) {
-		var document = "query {" +
+	public ExecutionResult getAll(@RequestParam(defaultValue = "id, email, password, fullName, birthday, gender") String fields) {
+		var query = "query {" +
 				"  allUsers {\n" +
 						fields +
 				"  }\n" +
 				"}";
-		return this.httpGraphQlClient.document(document)
-				.retrieve("allUsers")
-				.toEntityList(User.class);
+		ExecutionResult execute = authService.getGraphQL().execute(query);
+		return execute;
 	}
 
 	
-	@QueryMapping
-	public List<User> allUsers() {
-		return this.userRepository.findAll();
-	}
+//	@QueryMapping
+//	public List<User> allUsers() {
+//		return this.userRepository.findAll();
+//	}
 
 }

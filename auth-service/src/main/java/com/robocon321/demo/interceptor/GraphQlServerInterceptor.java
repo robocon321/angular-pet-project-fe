@@ -14,7 +14,6 @@ class GraphQlServerInterceptor implements WebGraphQlInterceptor {
 
 	@Override
 	public Mono<WebGraphQlResponse> intercept(WebGraphQlRequest request, Chain chain) {
-		log.info("interceptor logs {}", request.getDocument());
 		return chain.next(request);
 	}
 }

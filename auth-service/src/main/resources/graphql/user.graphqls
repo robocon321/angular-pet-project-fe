@@ -5,7 +5,6 @@ type User {
 	email: String!
 	password: String!
 	fullName: String
-	birthday: Date
 	gender: Boolean
 }
 
@@ -22,7 +21,6 @@ input AddUserInput {
 	email: String!
 	password: String!
 	fullName: String
-	birthday: Date
 	gender: Boolean
 }
 
@@ -31,6 +29,5 @@ input UpdateUserInput {
 	email: String!
 	password: String!
 	fullName: String
-	birthday: Date
 	gender: Boolean	
 }
