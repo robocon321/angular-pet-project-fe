@@ -1,5 +1,6 @@
 package com.robocon321.demo.config;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,14 +12,20 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 
 import com.robocon321.demo.security.AuthEntryPointJwt;
 import com.robocon321.demo.security.AuthTokenFilter;
 import com.robocon321.demo.service.impl.UserDetailsServiceImpl;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 @Configuration
 @EnableGlobalMethodSecurity(prePostEnabled = true)
@@ -75,7 +82,7 @@ public class WebSecurityConfig {
 		http.cors().configurationSource(request -> config).and().csrf().disable()
 			.exceptionHandling().authenticationEntryPoint(authEntryPointJwt).and()
 			.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-			.authorizeHttpRequests().requestMatchers("/sign-in").permitAll().anyRequest().authenticated();
+			.authorizeHttpRequests().requestMatchers("/sign-in", "/sign-up").permitAll().anyRequest().authenticated();
 
 		http.authenticationProvider(authenticationProvider());
 		http.addFilterBefore(authTokenFilter(), UsernamePasswordAuthenticationFilter.class);

@@ -1,12 +1,7 @@
-scalar Date
-
 type User {
 	id: ID!
 	email: String!
 	password: String!
-	fullName: String
-	birthday: Date
-	gender: Boolean
 }
 
 type Query {
@@ -21,16 +16,10 @@ type Mutation {
 input AddUserInput {
 	email: String!
 	password: String!
-	fullName: String
-	birthday: Date
-	gender: Boolean
 }
 
 input UpdateUserInput {
 	id: ID!
 	email: String!
 	password: String!
-	fullName: String
-	birthday: Date
-	gender: Boolean	
 }

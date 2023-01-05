@@ -17,7 +17,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.robocon321.demo.dto.request.LoginRequest;
+import com.robocon321.demo.dto.request.RegisterRequest;
 import com.robocon321.demo.dto.response.JwtResponse;
+import com.robocon321.demo.model.ERole;
 import com.robocon321.demo.model.RefreshToken;
 import com.robocon321.demo.repository.UserRepository;
 import com.robocon321.demo.service.AuthService;
@@ -30,10 +32,7 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("")
-public class AuthController {
-	@Autowired
-	private UserRepository userRepository;
-		
+public class AuthController {		
 	@Autowired
 	private AuthService authService;
 
@@ -45,7 +44,7 @@ public class AuthController {
 	
 	@Autowired
 	private RefreshTokenService refreshTokenService;
-	
+		
 	@GetMapping("/all")
 	public ExecutionResult getAll(@RequestParam(defaultValue = "id, email, password, fullName, birthday, gender") String fields) {
 		var query = "query {" +
@@ -70,4 +69,8 @@ public class AuthController {
 	    return ResponseEntity.ok(new JwtResponse(jwt, refreshToken.getToken(), roles, userDetails.getUsername()));
 	}
 
+	@PostMapping("/sign-up")	
+	public void register(@Valid @RequestBody RegisterRequest registerRequest) {
+		authService.save(registerRequest, ERole.CLIENT);
+	}
 }
