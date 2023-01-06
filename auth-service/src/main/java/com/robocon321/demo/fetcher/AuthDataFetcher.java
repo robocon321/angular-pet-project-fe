@@ -27,14 +27,15 @@ public class AuthDataFetcher {
 		};
 	}
 	
-	public DataFetcher<User> register(RegisterRequest registerRequest) {
+	public DataFetcher<User> register() {
 		return new DataFetcher<User>() {
 
 			@Override
-			public User get(DataFetchingEnvironment environment) throws Exception {				
-				User user = new User();
-				BeanUtils.copyProperties(registerRequest, user);
-				return userRepository.save(user);
+			public User get(DataFetchingEnvironment environment) throws Exception {
+//				User user = new User();
+//				BeanUtils.copyProperties(registerRequest, user);
+//				return userRepository.save(user);
+				return null;
 			}
 		};
 	}

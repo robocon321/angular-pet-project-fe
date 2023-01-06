@@ -56,7 +56,7 @@ public class AuthServiceImpl implements AuthService {
 		return RuntimeWiring.newRuntimeWiring()
 				.scalar(DateScalarUtil.get())
 				.type("Query", typeWiring -> typeWiring.dataFetcher("allUsers", authDataFetcher.getAllUsers()))
-//				.type("Mutation", typeWiring -> typeWiring.dataFetcher("saveUser", authDataFetcher.register(RegisterRequest.class)))
+				.type("Mutation", typeWiring -> typeWiring.dataFetcher("saveUser", authDataFetcher.register()))
 				.build();
 	}
 

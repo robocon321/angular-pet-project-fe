@@ -73,4 +73,17 @@ public class AuthController {
 	public void register(@Valid @RequestBody RegisterRequest registerRequest) {
 		authService.save(registerRequest, ERole.CLIENT);
 	}
+	
+//	@PostMapping("/sign-up")	
+//	public ExecutionResult register(@Valid @RequestBody RegisterRequest registerRequest) {
+//		String fields = "id, email";
+//		var query = "mutation {" +
+//				"  saveUser(addUserInput: { email: \""+ registerRequest.getEmail() + "\", password: \"" + registerRequest.getPassword() +"\"}) {" +
+//					fields +	
+//				"  }" +
+//				"}";
+//		ExecutionResult execute = authService.getGraphQL().execute(query);
+//		return execute;
+//	}
+
 }

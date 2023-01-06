@@ -82,7 +82,7 @@ public class WebSecurityConfig {
 		http.cors().configurationSource(request -> config).and().csrf().disable()
 			.exceptionHandling().authenticationEntryPoint(authEntryPointJwt).and()
 			.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-			.authorizeHttpRequests().requestMatchers("/sign-in", "/sign-up").permitAll().anyRequest().authenticated();
+			.authorizeHttpRequests().requestMatchers("/sign-in", "/sign-up", "/graphql").permitAll().anyRequest().authenticated();
 
 		http.authenticationProvider(authenticationProvider());
 		http.addFilterBefore(authTokenFilter(), UsernamePasswordAuthenticationFilter.class);
