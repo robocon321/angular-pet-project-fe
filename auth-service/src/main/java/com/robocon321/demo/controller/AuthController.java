@@ -9,6 +9,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,7 +28,7 @@ import com.robocon321.demo.util.JwtUtils;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("")
+@RequestMapping("api/auth")
 public class AuthController {		
 	@Autowired
 	private AuthService authService;
@@ -41,7 +42,7 @@ public class AuthController {
 	@Autowired
 	private RefreshTokenService refreshTokenService;
 				
-	@PostMapping("/sign-in")
+	@PostMapping("sign-in")
 	public ResponseEntity authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
 		Authentication authentication = authenticationManager.authenticate(
 			new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword())
@@ -54,10 +55,13 @@ public class AuthController {
 	    return ResponseEntity.ok(new JwtResponse(jwt, refreshToken.getToken(), roles, userDetails.getUsername()));
 	}
 
-	@PostMapping("/sign-up")	
+	@PostMapping("sign-up")	
 	public void register(@Valid @RequestBody RegisterRequest registerRequest) {
 		authService.save(registerRequest, ERole.CLIENT);
 	}
 	
-
+	@GetMapping("sayHi")
+	public String sayHi() {
+		return "Hello world";
+	}
 }
