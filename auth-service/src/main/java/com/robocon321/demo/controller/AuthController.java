@@ -9,7 +9,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,6 +19,7 @@ import com.robocon321.demo.dto.request.RegisterRequest;
 import com.robocon321.demo.dto.response.JwtResponse;
 import com.robocon321.demo.model.ERole;
 import com.robocon321.demo.model.RefreshToken;
+import com.robocon321.demo.repository.UserRepository;
 import com.robocon321.demo.service.AuthService;
 import com.robocon321.demo.service.RefreshTokenService;
 import com.robocon321.demo.service.impl.UserDetailsImpl;
@@ -41,6 +41,9 @@ public class AuthController {
 	
 	@Autowired
 	private RefreshTokenService refreshTokenService;
+	
+	@Autowired
+	private UserRepository userRepository;
 				
 	@PostMapping("sign-in")
 	public ResponseEntity authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
@@ -60,8 +63,9 @@ public class AuthController {
 		authService.save(registerRequest, ERole.CLIENT);
 	}
 	
-	@GetMapping("sayHi")
-	public String sayHi() {
-		return "Hello world";
+	@PostMapping("refreshAccessToken")
+	public String refreshAccessToken(@RequestBody String refreshToken) {
+		return refreshTokenService.refreshAccessToken(refreshToken);
 	}
+
 }

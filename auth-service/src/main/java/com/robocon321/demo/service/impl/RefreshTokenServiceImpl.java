@@ -1,26 +1,27 @@
 package com.robocon321.demo.service.impl;
 
 import java.time.LocalDate;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import com.robocon321.demo.exception.TokenRefreshException;
+import com.robocon321.demo.exception.ExpiredRefreshTokenException;
+import com.robocon321.demo.exception.NotFoundRefreshToken;
 import com.robocon321.demo.model.RefreshToken;
 import com.robocon321.demo.model.User;
-import com.robocon321.demo.repository.RefreshTokenRepository;
 import com.robocon321.demo.repository.UserRepository;
 import com.robocon321.demo.service.RefreshTokenService;
+import com.robocon321.demo.util.JwtUtils;
 
-@Service
-public class RefreshTokenServiceImpl implements RefreshTokenService {
-	@Autowired
-	private RefreshTokenRepository refreshTokenRepository;
-	
+@Service	
+public class RefreshTokenServiceImpl implements RefreshTokenService {	
 	@Autowired
 	private UserRepository userRepository;
+	
+	@Autowired
+	private JwtUtils jwtUtils;
 	
 	public RefreshToken createRefreshToken(User user) {
 		RefreshToken refreshToken = new RefreshToken();
@@ -31,11 +32,22 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
 		return user.getRefreshToken();
 	}
 	
-	public RefreshToken verifyExpiration(RefreshToken refreshToken) {
+	public void verifyExpiration(User user) {
+		RefreshToken refreshToken = user.getRefreshToken();
 		if(refreshToken.getExpireDate().compareTo(LocalDate.now()) < 0) {
-			refreshTokenRepository.delete(refreshToken);
-			throw new TokenRefreshException(refreshToken.getToken(), "Refresh token was expired. Please make a new signin request");
+			user.setRefreshToken(null);
+			userRepository.save(user);
+			throw new ExpiredRefreshTokenException(refreshToken.getToken(), "Refresh token was expired. Please make a new signin request");
 		}
-		return refreshToken;
+	}
+
+	@Override
+	public String refreshAccessToken(String request) {
+		Optional<User> userOpt = userRepository.findByRefreshTokenToken(request);
+		if(userOpt.isEmpty()) throw new NotFoundRefreshToken("Token [" + request + "] invalid");
+		User user = userOpt.get();
+		verifyExpiration(user);
+		String newToken = jwtUtils.generateTokenFromJwtToken(user.getEmail());
+		return newToken;
 	}
 }

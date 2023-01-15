@@ -1,0 +1,7 @@
+discovery-server=8761
+
+gateway=8000
+file-service=8001
+
+auth-service=8080
+blog-service=8081

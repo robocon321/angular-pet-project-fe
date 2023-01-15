@@ -6,20 +6,19 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 
-import com.robocon321.demo.security.AuthEntryPointJwt;
 import com.robocon321.demo.security.AuthTokenFilter;
 import com.robocon321.demo.service.impl.UserDetailsServiceImpl;
 
@@ -32,9 +31,6 @@ import jakarta.servlet.http.HttpServletResponse;
 public class WebSecurityConfig {
 	@Autowired
 	private UserDetailsServiceImpl userDetailsServiceImpl;
-
-	@Autowired
-	private AuthEntryPointJwt authEntryPointJwt;
 
 	@Bean
 	public AuthTokenFilter authTokenFilter() {
@@ -70,6 +66,16 @@ public class WebSecurityConfig {
 		};
 	}
 	
+	public AccessDeniedHandler accessDenyHandler() {
+		return new AccessDeniedHandler() {
+			@Override
+			public void handle(HttpServletRequest request, HttpServletResponse response,
+					AccessDeniedException accessDeniedException) throws IOException, ServletException {
+				throw new AccessDeniedException("Access to the resource is not allowed " + request.getServletPath());				
+			}
+		};
+	}
+	
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		CorsConfiguration config = new CorsConfiguration();
@@ -80,10 +86,10 @@ public class WebSecurityConfig {
 		config.setAllowedOrigins(List.of("http://localhost:4200"));
 		
 		http.cors().configurationSource(request -> config).and().csrf().disable()
-			.exceptionHandling().authenticationEntryPoint(authEntryPointJwt).and()
+			.exceptionHandling().accessDeniedHandler(accessDenyHandler()).and()
 			.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 //			.and()
-//			.authorizeHttpRequests().requestMatchers("/sign-in", "/sign-up", "/sayHi").permitAll().anyRequest().authenticated();
+//			.authorizeHttpRequests().requestMatchers("/api/auth/**").permitAll().anyRequest().authenticated();
 
 		http.authenticationProvider(authenticationProvider());
 		http.addFilterBefore(authTokenFilter(), UsernamePasswordAuthenticationFilter.class);

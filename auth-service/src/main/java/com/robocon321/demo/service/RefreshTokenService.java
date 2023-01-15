@@ -5,5 +5,5 @@ import com.robocon321.demo.model.User;
 
 public interface RefreshTokenService {
 	RefreshToken createRefreshToken(User user);
-	RefreshToken verifyExpiration(RefreshToken refreshToken);
+	String refreshAccessToken(String refreshToken);
 }

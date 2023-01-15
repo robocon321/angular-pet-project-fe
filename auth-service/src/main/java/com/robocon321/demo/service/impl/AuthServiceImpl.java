@@ -23,7 +23,7 @@ public class AuthServiceImpl implements AuthService {
 		BeanUtils.copyProperties(registerRequest, user);
 		user.setRole(ERole.CLIENT);
 		try {
-			userRepository.save(user);			
+			userRepository.save(user);
 		} catch(Exception ex) {
 			// cannot catch MongoWriteException
 			

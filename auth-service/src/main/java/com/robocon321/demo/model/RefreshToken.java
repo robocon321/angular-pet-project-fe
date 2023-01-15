@@ -10,12 +10,9 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
-@Document
+@Document("refreshToken")
 @Data
 public class RefreshToken {
-	@Id
-	private String id;
-	
 	@NotBlank
 	private String token;
 

@@ -12,6 +12,7 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.robocon321.demo.dto.response.ErrorResponse;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -28,11 +29,10 @@ public class AuthEntryPointJwt implements AuthenticationEntryPoint {
 		response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 		response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 
-		final Map<String, Object> body = new HashMap<>();
-	    body.put("status", HttpServletResponse.SC_UNAUTHORIZED);
-	    body.put("error", "Unauthorized");
-	    body.put("message", authException.getMessage());
-	    body.put("path", request.getServletPath());
+		ErrorResponse body = new ErrorResponse();
+		body.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+		body.setError("Unauthorized");
+		body.setMessage(authException.getMessage());
 
 	    final ObjectMapper mapper = new ObjectMapper();
 	    mapper.writeValue(response.getOutputStream(), body);
