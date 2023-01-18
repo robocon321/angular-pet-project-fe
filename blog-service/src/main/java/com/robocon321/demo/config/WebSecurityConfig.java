@@ -11,6 +11,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -44,13 +45,22 @@ public class WebSecurityConfig {
 		config.setAllowedHeaders(List.of("Authorization", "Cache-Control", "Content-Type", "Access-Control-Allow-Origin"));
 		config.addAllowedMethod("*");
 		config.setAllowedOrigins(List.of("http://localhost:4200"));
-
+		
+		String[] whitelist = {
+		        "/authenticate",
+		        "/swagger-resources/**",
+		        "/swagger-ui.html",
+		        "/swagger-ui/**",
+		        "/api-docs/**",
+		        "/webjars/**"
+		};
+		
 		http.cors().configurationSource(request -> config).and().csrf().disable()
-			.exceptionHandling().authenticationEntryPoint(authEntryPointJwt).and()
-			.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-			.and()
-			.authorizeHttpRequests().anyRequest().authenticated();
-
+			.exceptionHandling().authenticationEntryPoint(authEntryPointJwt)
+			.and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+			.and().authorizeHttpRequests().requestMatchers(whitelist).permitAll()
+			.anyRequest().authenticated();
+		http.headers().frameOptions().disable();
 		http.addFilterBefore(authTokenFilter, UsernamePasswordAuthenticationFilter.class);
 		return http.build();
 	}

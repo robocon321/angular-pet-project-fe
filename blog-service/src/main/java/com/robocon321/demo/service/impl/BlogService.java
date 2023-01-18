@@ -1,11 +1,12 @@
 package com.robocon321.demo.service.impl;
 
 import java.io.IOException;
-import java.util.Map;
+import java.util.Optional;
 
-import org.bson.Document;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -18,12 +19,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
-import com.mongodb.client.model.Filters;
-import com.mongodb.client.model.Updates;
-import com.mongodb.client.result.UpdateResult;
+import com.querydsl.core.types.Predicate;
 import com.robocon321.demo.dto.request.BlogRequest;
 import com.robocon321.demo.dto.response.BlogResponse;
 import com.robocon321.demo.exception.CannotSaveImageException;
@@ -36,7 +32,7 @@ import com.robocon321.demo.repository.UserRepository;
 public class BlogService {
 	@Autowired
 	private BlogRepository blogRepository;
-
+	
 	@Autowired
 	private UserRepository userRepository;
 
@@ -44,6 +40,24 @@ public class BlogService {
 	MongoTemplate mongoTemplate;
 
 	private RestTemplate restTemplate = new RestTemplate();
+	
+	public Page<BlogResponse> getPage(Pageable pageable, Predicate predicate) {
+		Page<Blog> blogs = blogRepository.findAll(predicate, pageable);
+		Page<BlogResponse> response = pageDocumentToDTO(blogs);
+		return response;
+	}
+	
+	private Page<BlogResponse> pageDocumentToDTO(Page<Blog> page) {
+		return page.map(blog -> documentToDTO(blog));
+	}
+	
+	private BlogResponse documentToDTO(Blog blog) {
+		BlogResponse dto = new BlogResponse();
+		BeanUtils.copyProperties(blog, dto);
+		Optional<User> userOpt = userRepository.findById(blog.getUserId());
+		if(userOpt.isPresent()) dto.setCreateBy(userOpt.get().getEmail()); 
+		return dto;
+	}
 
 	public BlogResponse save(BlogRequest blogRequest) throws IOException {
 		String path = storeToFileService(blogRequest.getImage());
