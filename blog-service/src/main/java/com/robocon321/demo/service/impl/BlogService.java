@@ -1,6 +1,8 @@
 package com.robocon321.demo.service.impl;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.BeanUtils;
@@ -10,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -100,7 +103,7 @@ public class BlogService {
 		HttpEntity<MultiValueMap<String, Object>> request = new HttpEntity<MultiValueMap<String, Object>>(body,
 				headers);
 
-		ResponseEntity<String> responseEntity = restTemplate.postForEntity("http://localhost:8001/api/file/upload",
+		ResponseEntity<String> responseEntity = restTemplate.postForEntity("http://localhost:8001/api/file",
 				request, String.class);
 		if (responseEntity.getStatusCodeValue() < 200 && responseEntity.getStatusCodeValue() > 299)
 			throw new CannotSaveImageException(responseEntity.getBody());
@@ -113,6 +116,17 @@ public class BlogService {
 		if (multipartArr.length == 0)
 			throw new RuntimeException("File invalid");
 		return multipartArr[multipartArr.length - 1];
+	}
+
+	public void delete(String id) {
+		Optional<Blog> blogOpt = blogRepository.findById(id);
+		if(blogOpt.isEmpty()) return ;
+		blogRepository.deleteById(id);
+		String image = blogOpt.get().getImage();
+//		restTemplate.delete("http://localhost:8001/api/file", image);
+		HttpEntity<String> request = new HttpEntity<String>(image);
+		ResponseEntity<String> response = restTemplate.exchange("http://localhost:8001/api/file", HttpMethod.DELETE, request, String.class);
+
 	}
 
 }

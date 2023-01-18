@@ -1,6 +1,7 @@
 package com.robocon321.demo;
 
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -8,7 +9,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -22,7 +26,7 @@ public class FileController {
 	public final String PATH_RESOURCE = "src/main/resources/";
 	
 	// Uploading a file
-	@RequestMapping(value = "upload", method = RequestMethod.POST)
+	@PostMapping
 	public String uploadFile(@RequestParam MultipartFile file, @RequestParam String uploadDir, @RequestParam String fileName) throws Exception{
 		// Setting up the path of the file
 		String fileUploadStatus;
@@ -44,6 +48,12 @@ public class FileController {
 	@GetMapping
 	public String sayHi() {
 		return "Hello world";
+	}
+	
+	@DeleteMapping
+	public boolean deleteFile(@RequestBody String path) {
+		File file = new File(PATH_RESOURCE + path);
+		return file.delete();
 	}
 
 	private void saveMultipart(MultipartFile multipart, String path, String fileName) throws IOException {
