@@ -32,7 +32,7 @@ public class Blog {
 	private String description;
 	
 	@CreatedDate
-	private LocalDate createDate;
+	private LocalDate createdDate;
 	
 	@CreatedBy
 	private String userId;

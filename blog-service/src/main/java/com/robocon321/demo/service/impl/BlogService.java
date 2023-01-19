@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -23,16 +25,21 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.querydsl.core.types.Predicate;
-import com.robocon321.demo.dto.request.BlogRequest;
+import com.robocon321.demo.dto.request.CreateBlogRequest;
+import com.robocon321.demo.dto.request.UpdateBlogRequest;
 import com.robocon321.demo.dto.response.BlogResponse;
 import com.robocon321.demo.exception.CannotSaveImageException;
+import com.robocon321.demo.exception.NotFoundException;
 import com.robocon321.demo.model.Blog;
 import com.robocon321.demo.model.User;
 import com.robocon321.demo.repository.BlogRepository;
 import com.robocon321.demo.repository.UserRepository;
+import com.robocon321.demo.util.JwtUtils;
 
 @Service
 public class BlogService {
+	private static final Logger logger = LoggerFactory.getLogger(JwtUtils.class);
+
 	@Autowired
 	private BlogRepository blogRepository;
 	
@@ -50,21 +57,49 @@ public class BlogService {
 		return response;
 	}
 	
+	public BlogResponse getById(String id) {
+		Optional<Blog> blogOpt = blogRepository.findById(id);
+		if(blogOpt.isEmpty()) {
+			logger.error("Not found blog id: " + id);
+			throw new NotFoundException("Not found blog id: " + id);
+		}
+		return documentToDTO(blogOpt.get());
+	}
+	
+	public BlogResponse update(UpdateBlogRequest blogRequest) throws IOException {
+		Optional<Blog> oldBlogOpt = blogRepository.findById(blogRequest.getId());
+		if(oldBlogOpt.isEmpty()) {
+			logger.error("Not found blog id: " + blogRequest.getId());
+			throw new NotFoundException("Not found blog id: " + blogRequest.getId());
+		}
+		Blog oldBlog = oldBlogOpt.get();
+		String path;
+		if(blogRequest.getImage() == null) {
+			path = oldBlog.getImage();
+		} else {
+			path = storeToFileService(blogRequest.getImage());			
+		}
+		oldBlog.setTitle(blogRequest.getTitle());
+		oldBlog.setDescription(blogRequest.getDescription());
+		oldBlog.setImage(path);
+		BlogResponse response = storeBlog(oldBlog);
+		return response;
+	}
+	
 	private Page<BlogResponse> pageDocumentToDTO(Page<Blog> page) {
 		return page.map(blog -> documentToDTO(blog));
 	}
 	
 	private BlogResponse documentToDTO(Blog blog) {
-		BlogResponse dto = new BlogResponse();
-		BeanUtils.copyProperties(blog, dto);
+		BlogResponse responseDTO = new BlogResponse();
+		BeanUtils.copyProperties(blog, responseDTO);
 		Optional<User> userOpt = userRepository.findById(blog.getUserId());
-		if(userOpt.isPresent()) dto.setCreateBy(userOpt.get().getEmail()); 
-		return dto;
+		if(userOpt.isPresent()) responseDTO.setCreatedBy(userOpt.get().getEmail()); 
+		return responseDTO;
 	}
 
-	public BlogResponse save(BlogRequest blogRequest) throws IOException {
+	public BlogResponse save(CreateBlogRequest blogRequest) throws IOException {
 		String path = storeToFileService(blogRequest.getImage());
-//		String path = "/image/haha.txt";
 		Blog blog = buildDocument(blogRequest.getTitle(), path, blogRequest.getDescription());
 		BlogResponse response = storeBlog(blog);
 		return response;
@@ -78,7 +113,7 @@ public class BlogService {
 		blog.setUserId(user.getId());
 		Blog newBlog = blogRepository.save(blog);
 		BeanUtils.copyProperties(newBlog, response);
-		response.setCreateBy(user.getId());
+		response.setCreatedBy(user.getId());
 		return response;
 	}
 

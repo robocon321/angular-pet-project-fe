@@ -23,7 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 @RequestMapping("api/file")
 public class FileController {
-	public final String PATH_RESOURCE = "src/main/resources/";
+	public final String PATH_RESOURCE = "src/main/resources/static";
 	
 	// Uploading a file
 	@PostMapping

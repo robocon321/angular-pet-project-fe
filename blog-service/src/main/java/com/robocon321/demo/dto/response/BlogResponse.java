@@ -18,6 +18,6 @@ public class BlogResponse {
 	private String title;
 	private String image;
 	private String description;
-	private LocalDate createDate;
-	private String createBy;
+	private LocalDate createdDate;
+	private String createdBy;
 }
