@@ -5,3 +5,4 @@ file-service=8001
 
 auth-service=8080
 blog-service=8081
+chat-service=8082

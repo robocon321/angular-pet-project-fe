@@ -54,7 +54,7 @@ public class WebSecurityConfig {
 		        "/swagger-ui/**",
 		        "/api-docs/**",
 		        "/webjars/**",
-		        "/api/blog"
+		        "/ws"
 		};
 		
 		http.cors().configurationSource(request -> config).and().csrf().disable()
