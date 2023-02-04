@@ -1,5 +1,6 @@
 package com.robocon321.demo.dto.response;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import lombok.AllArgsConstructor;
@@ -8,13 +9,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@NoArgsConstructor
-public class JwtResponse {
+public class CreateRoomResponse {
 	private String id;
-	private String token;
-	private String refreshToken;
-	private List<String> roles;
-	private String email;
+	private String name;
+	private UserResponse createBy;
+	private List<UserResponse> members;
 }

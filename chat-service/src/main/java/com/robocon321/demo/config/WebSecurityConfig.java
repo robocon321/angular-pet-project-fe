@@ -47,14 +47,13 @@ public class WebSecurityConfig {
 		config.setAllowedOrigins(List.of("http://localhost:4200"));
 		
 		String[] whitelist = {
-//				"/api/blog/**",
 		        "/authenticate",
 		        "/swagger-resources/**",
 		        "/swagger-ui.html",
 		        "/swagger-ui/**",
 		        "/api-docs/**",
 		        "/webjars/**",
-		        "/ws"
+		        "/ws/**"
 		};
 		
 		http.cors().configurationSource(request -> config).and().csrf().disable()
