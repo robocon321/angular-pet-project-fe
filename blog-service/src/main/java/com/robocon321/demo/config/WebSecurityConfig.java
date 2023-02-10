@@ -41,10 +41,10 @@ public class WebSecurityConfig {
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		CorsConfiguration config = new CorsConfiguration();
 
-		config.setAllowCredentials(true);
-		config.setAllowedHeaders(List.of("Authorization", "Cache-Control", "Content-Type", "Access-Control-Allow-Origin"));
-		config.addAllowedMethod("*");
-		config.setAllowedOrigins(List.of("http://localhost:4200"));
+//		config.setAllowCredentials(true);
+//		config.setAllowedHeaders(List.of("Authorization", "Cache-Control", "Content-Type", "Access-Control-Allow-Origin"));
+//		config.addAllowedMethod("*");
+//		config.setAllowedOrigins(List.of("http://localhost:4200"));
 		
 		String[] whitelist = {
 //				"/api/blog/**",
@@ -57,7 +57,7 @@ public class WebSecurityConfig {
 		        "/api/blog"
 		};
 		
-		http.cors().configurationSource(request -> config).and().csrf().disable()
+		http.cors().disable().csrf().disable()
 			.exceptionHandling().authenticationEntryPoint(authEntryPointJwt)
 			.and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 			.and().authorizeHttpRequests().requestMatchers(whitelist).permitAll()

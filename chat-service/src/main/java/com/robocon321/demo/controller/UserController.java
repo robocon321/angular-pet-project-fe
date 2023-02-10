@@ -1,7 +1,5 @@
 package com.robocon321.demo.controller;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,17 +14,14 @@ import org.springframework.web.bind.annotation.RestController;
 import com.querydsl.core.types.Predicate;
 import com.robocon321.demo.dto.response.UserResponse;
 import com.robocon321.demo.model.User;
-import com.robocon321.demo.repository.UserRepository;
 import com.robocon321.demo.service.UserService;
 
 @RestController
-@RequestMapping("api/user")
+@RequestMapping("api/chat/user")
 public class UserController {
 	@Autowired
 	private UserService userService;
 	
-	@Autowired
-	private UserRepository userRepository;
 	
 	@GetMapping
 	public Page<UserResponse> getPage(@QuerydslPredicate(root = User.class) Predicate predicate,
