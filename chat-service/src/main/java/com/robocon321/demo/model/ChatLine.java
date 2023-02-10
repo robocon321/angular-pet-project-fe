@@ -6,6 +6,7 @@ import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.DocumentReference;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,9 +22,14 @@ public class ChatLine {
 	@Id
 	private String id;
 	@CreatedBy
-	private String createBy;
+	@DocumentReference
+	private User createBy;
 	@CreatedDate
 	private LocalDate createDate;
+	@DocumentReference
 	private Room room;
+	@DocumentReference
 	private ChatLine replyTo;
+	@DocumentReference
+	private Message message;
 }

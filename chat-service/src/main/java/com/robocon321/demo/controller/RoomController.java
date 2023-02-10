@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.querydsl.core.types.Predicate;
 import com.robocon321.demo.dto.request.CreateRoomRequest;
-import com.robocon321.demo.dto.response.CreateRoomResponse;
+import com.robocon321.demo.dto.response.RoomResponse;
 import com.robocon321.demo.dto.response.UserResponse;
 import com.robocon321.demo.model.Room;
 import com.robocon321.demo.model.User;
@@ -48,16 +48,16 @@ public class RoomController {
     private SimpMessagingTemplate simpMessagingTemplate;
 			
 	@GetMapping
-	public List<CreateRoomResponse> getRoom() {
+	public List<RoomResponse> getRoom() {
 		return roomService.findRoomJoined();
 	}	
 	
     @PostMapping
 	public void save(@Valid @RequestBody CreateRoomRequest request) {
     	log.info("Request " + request);
-		CreateRoomResponse response = roomService.save(request);
+		RoomResponse response = roomService.save(request);
 		for(UserResponse member : response.getMembers()) {
-	        simpMessagingTemplate.convertAndSendToUser(member.getId(),"/new-room/private", response);	
+	        simpMessagingTemplate.convertAndSendToUser(member.getId(),"/new-room/private", response);
 		}
-	}
+	}    
 }

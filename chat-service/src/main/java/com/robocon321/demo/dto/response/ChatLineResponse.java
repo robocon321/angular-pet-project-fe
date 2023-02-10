@@ -1,7 +1,6 @@
 package com.robocon321.demo.dto.response;
 
 import java.time.LocalDate;
-import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,9 +11,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class CreateRoomResponse {
+public class ChatLineResponse {
 	private String id;
-	private String name;
 	private UserResponse createBy;
-	private List<UserResponse> members;
+	private LocalDate createDate;
+	private RoomResponse room;
+	private ChatLineResponse replyTo;
+	private MessageResponse message;
 }
